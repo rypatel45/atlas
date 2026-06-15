@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
 import pycountry
 import os
 
@@ -176,6 +176,19 @@ def reset():
     flash("🔄 Game ended!")
 
     return redirect(url_for("home"))
+
+
+# PWA Routing Handlers
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'manifest.json')
+
+
+@app.route('/sw.js')
+def serve_sw():
+    response = send_from_directory(os.path.join(app.root_path, 'static'), 'sw.js')
+    response.headers['Service-Worker-Allowed'] = '/'
+    return response
 
 
 if __name__ == "__main__":

@@ -8,9 +8,21 @@
     <link rel="shortcut icon" href="/static/favicon.png" type="image/x-icon">
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
+          
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/static/favicon.png">
 </head>
 
 <body>
+
+<div class="container" style="margin-top: 10px; margin-bottom: 10px;">
+    <button id="installBtn" class="pwa-btn" style="display: none;">⬇️ Add to Home Screen</button>
+
+    <div id="iosPrompt" style="display: none;">
+        <p>Install Atlas on your iPhone! Tap the <strong>Share</strong> button below and select <strong>'Add to Home Screen'</strong>.</p>
+        <button onclick="document.getElementById('iosPrompt').style.display='none'" style="background: #334155; padding: 8px; margin-top: 8px; font-size: 0.9rem; border: none; border-radius: 6px; color: white; cursor: pointer;">Dismiss</button>
+    </div>
+</div>
 
 {% if players|length == 0 %}
 
@@ -124,6 +136,57 @@
 </div>
 
 {% endif %}
+
+<script>
+    (function() {
+        const initPWA = () => {
+            const installBtn = document.getElementById('installBtn');
+            const iosPrompt = document.getElementById('iosPrompt');
+
+            if (!installBtn || !iosPrompt) return;
+
+            let deferredPrompt;
+            const isIos = () => /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.style.display = 'block';
+            });
+
+            if (installBtn.addEventListener) {
+                installBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        await deferredPrompt.userChoice;
+                        deferredPrompt = null;
+                        installBtn.style.display = 'none';
+                    } else if (isIos() && !isInStandaloneMode()) {
+                        iosPrompt.style.display = 'block';
+                    }
+                });
+            }
+
+            if (isIos() && !isInStandaloneMode()) {
+                installBtn.style.display = 'block';
+                installBtn.innerText = "📲 Install on iPhone";
+            }
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPWA);
+        } else {
+            initPWA();
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                .then(() => console.log('SW Registered'))
+                .catch((err) => console.log('SW Registration failed:', err));
+        }
+    })();
+</script>
 
 </body>
 </html>

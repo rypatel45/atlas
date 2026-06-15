@@ -265,3 +265,35 @@ button:hover {
 
     background: #475569;
 }
+
+/* Added PWA Design Interfaces */
+.pwa-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #059669 !important;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.pwa-btn:hover {
+    background: #047857 !important;
+}
+
+#iosPrompt {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 2px dashed #2563eb;
+}
