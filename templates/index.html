@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Atlas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+{% if players|length == 0 %}
+
+<div class="container">
+
+    <h1>🌍 Atlas</h1>
+
+    <p class="subtitle">
+        The ultimate pass-the-phone geography game
+    </p>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+        <input type="hidden" name="start_game">
+
+        <input type="text" name="player1" placeholder="Player 1">
+
+        <input type="text" name="player2" placeholder="Player 2">
+
+        <input type="text" name="player3" placeholder="Player 3">
+
+        <input type="text" name="player4" placeholder="Player 4">
+
+        <input type="text" name="player5" placeholder="Player 5">
+
+        <input type="text" name="player6" placeholder="Player 6">
+
+        <button type="submit">
+            Start Game
+        </button>
+
+    </form>
+
+</div>
+
+{% else %}
+
+<div class="container">
+
+    <div class="turn-banner">
+        🎮 {{ current_player.upper() }}'S TURN
+    </div>
+
+    <div class="letter-box">
+
+        {% if current_letter %}
+            {{ current_letter }}
+        {% else %}
+            ?
+        {% endif %}
+
+    </div>
+
+    <div class="card">
+
+        <p>
+            <strong>Last Valid Country</strong>
+        </p>
+
+        <p class="last-place">
+
+            {% if last_place %}
+                {{ last_place }}
+            {% else %}
+                No countries entered yet
+            {% endif %}
+
+        </p>
+
+        <p>
+            Countries Used:
+            <strong>{{ total_places }}</strong>
+        </p>
+
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="place"
+            placeholder="Enter a country"
+            autocomplete="off">
+
+        <button type="submit">
+            Submit
+        </button>
+
+    </form>
+
+    <a href="/reset" class="reset-btn">
+        End Game
+    </a>
+
+</div>
+
+{% endif %}
+
+</body>
+</html>

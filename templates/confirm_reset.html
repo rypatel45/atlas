@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>End Game</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <div class="confirm-container">
+
+        <div class="confirm-card">
+
+            <h1>⚠️ End Current Game?</h1>
+
+            <p>
+                This will remove all players and countries.
+                This action cannot be undone.
+            </p>
+
+            <a href="/reset?confirm=yes"
+               class="danger-btn">
+
+                End Game
+
+            </a>
+
+            <a href="/"
+               class="cancel-btn">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
