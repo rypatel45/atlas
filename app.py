@@ -157,6 +157,21 @@ def home():
         total_places=len(used_places)
     )
 
+@app.route("/next_turn")
+def next_turn():
+
+    global current_player_index
+
+    if len(players) > 0:
+
+        current_player_index += 1
+
+        if current_player_index >= len(players):
+            current_player_index = 0
+
+        flash("⏰ Time's up! Next player's turn.")
+
+    return redirect(url_for("home"))
 
 @app.route("/reset")
 def reset():

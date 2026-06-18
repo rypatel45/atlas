@@ -73,6 +73,10 @@
     <div class="turn-banner">
         🎮 {{ current_player.upper() }}'S TURN
     </div>
+    
+    <div class="timer-box">
+        ⏰ Timer: <span id="timer">30</span>
+    </div>
 
     <div class="letter-box">
 
@@ -100,10 +104,10 @@
 
         </p>
 
-        <p>
+        <!-- <p>
             Countries Used:
             <strong>{{ total_places }}</strong>
-        </p>
+        </p> -->
 
     </div>
 
@@ -136,7 +140,6 @@
 </div>
 
 {% endif %}
-
 <script>
     (function() {
         const initPWA = () => {
@@ -186,7 +189,31 @@
                 .catch((err) => console.log('SW Registration failed:', err));
         }
     })();
-</script>
+// Timer
 
+        let timeLeft = 30;
+
+        const timerElement =
+            document.getElementById("timer");
+
+        if (timerElement) {
+
+            setInterval(() => {
+
+                timeLeft--;
+
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+
+                    window.location.href = "/next_turn";
+
+                }
+
+            }, 1000);
+
+        }
+
+    </script>
 </body>
 </html>
