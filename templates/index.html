@@ -1,27 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Atlas</title>
-    <link rel="shortcut icon" href="/static/favicon.png" type="image/x-icon">
+
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
-          
+
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/static/favicon.png">
+
+    <link rel="apple-touch-icon"
+          href="/static/favicon.png">
+
+    <link rel="shortcut icon"
+          href="/static/favicon.png">
+
 </head>
 
 <body>
 
-<div class="container" style="margin-top: 10px; margin-bottom: 10px;">
-    <button id="installBtn" class="pwa-btn" style="display: none;">⬇️ Add to Home Screen</button>
+<div class="container">
 
-    <div id="iosPrompt" style="display: none;">
-        <p>Install Atlas on your iPhone! Tap the <strong>Share</strong> button below and select <strong>'Add to Home Screen'</strong>.</p>
-        <button onclick="document.getElementById('iosPrompt').style.display='none'" style="background: #334155; padding: 8px; margin-top: 8px; font-size: 0.9rem; border: none; border-radius: 6px; color: white; cursor: pointer;">Dismiss</button>
-    </div>
+    <button id="installBtn"
+            class="pwa-btn"
+            style="display:none;">
+        📲 Install Atlas
+    </button>
+
 </div>
 
 {% if players|length == 0 %}
@@ -31,35 +40,50 @@
     <h1>🌍 Atlas</h1>
 
     <p class="subtitle">
-        The ultimate pass-the-phone geography game
+        The Ultimate Pass-The-Phone Geography Game
     </p>
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                <p class="message">{{ message }}</p>
+                <p class="message">
+                    {{ message }}
+                </p>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
     <form method="POST">
 
-        <input type="hidden" name="start_game">
+        <input type="hidden"
+               name="start_game">
 
-        <input type="text" name="player1" placeholder="Player 1">
+        <input type="text"
+               name="player1"
+               placeholder="Player 1">
 
-        <input type="text" name="player2" placeholder="Player 2">
+        <input type="text"
+               name="player2"
+               placeholder="Player 2">
 
-        <input type="text" name="player3" placeholder="Player 3">
+        <input type="text"
+               name="player3"
+               placeholder="Player 3">
 
-        <input type="text" name="player4" placeholder="Player 4">
+        <input type="text"
+               name="player4"
+               placeholder="Player 4">
 
-        <input type="text" name="player5" placeholder="Player 5">
+        <input type="text"
+               name="player5"
+               placeholder="Player 5">
 
-        <input type="text" name="player6" placeholder="Player 6">
+        <input type="text"
+               name="player6"
+               placeholder="Player 6">
 
         <button type="submit">
-            Start Game
+            🚀 Start Game
         </button>
 
     </form>
@@ -70,13 +94,49 @@
 
 <div class="container">
 
+    <!-- Lives -->
+
+    <div class="lives-card">
+
+        <h3>
+            ❤️ Lives
+        </h3>
+
+        {% for player in players %}
+
+            <p class="player-life">
+
+                {% if player == current_player %}
+                    🎯
+                {% endif %}
+
+                {{ player }}
+
+                {{ "❤️" * player_lives[player] }}
+
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- Current Turn -->
+
     <div class="turn-banner">
-        🎮 {{ current_player.upper() }}'S TURN
+
+        🎮 {{ current_player.upper() }}
+
     </div>
-    
+
+    <!-- Timer -->
+
     <div class="timer-box">
-        ⏰ Timer: <span id="timer">30</span>
+
+        ⏰ <span id="timer">30</span>s
+
     </div>
+
+    <!-- Current Letter -->
 
     <div class="letter-box">
 
@@ -88,10 +148,16 @@
 
     </div>
 
+    <!-- Last Country -->
+
     <div class="card">
 
         <p>
-            <strong>Last Valid Country</strong>
+
+            <strong>
+                Last Valid Country
+            </strong>
+
         </p>
 
         <p class="last-place">
@@ -104,116 +170,135 @@
 
         </p>
 
-        <!-- <p>
-            Countries Used:
-            <strong>{{ total_places }}</strong>
-        </p> -->
-
     </div>
+
+    <!-- Messages -->
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                <p class="message">{{ message }}</p>
+                <p class="message">
+                    {{ message }}
+                </p>
             {% endfor %}
         {% endif %}
     {% endwith %}
+
+    <!-- Submit Country -->
 
     <form method="POST">
 
         <input
             type="text"
             name="place"
-            placeholder="Enter a country"
-            autocomplete="off">
+            placeholder="Enter a country..."
+            autocomplete="off"
+            autofocus>
 
         <button type="submit">
-            Submit
+            ✅ Submit
         </button>
 
     </form>
 
-    <a href="/reset" class="reset-btn">
-        End Game
+    <!-- End Game -->
+
+    <a href="/reset"
+       class="reset-btn">
+
+        🛑 End Game
+
     </a>
 
 </div>
 
 {% endif %}
+
 <script>
-    (function() {
-        const initPWA = () => {
-            const installBtn = document.getElementById('installBtn');
-            const iosPrompt = document.getElementById('iosPrompt');
 
-            if (!installBtn || !iosPrompt) return;
+let deferredPrompt;
 
-            let deferredPrompt;
-            const isIos = () => /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+const installBtn =
+    document.getElementById("installBtn");
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                installBtn.style.display = 'block';
-            });
+window.addEventListener(
+    "beforeinstallprompt",
+    (e) => {
 
-            if (installBtn.addEventListener) {
-                installBtn.addEventListener('click', async () => {
-                    if (deferredPrompt) {
-                        deferredPrompt.prompt();
-                        await deferredPrompt.userChoice;
-                        deferredPrompt = null;
-                        installBtn.style.display = 'none';
-                    } else if (isIos() && !isInStandaloneMode()) {
-                        iosPrompt.style.display = 'block';
-                    }
-                });
-            }
+        e.preventDefault();
 
-            if (isIos() && !isInStandaloneMode()) {
-                installBtn.style.display = 'block';
-                installBtn.innerText = "📲 Install on iPhone";
-            }
-        };
+        deferredPrompt = e;
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initPWA);
-        } else {
-            initPWA();
+        if (installBtn) {
+            installBtn.style.display = "block";
         }
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                .then(() => console.log('SW Registered'))
-                .catch((err) => console.log('SW Registration failed:', err));
-        }
-    })();
-// Timer
+    }
+);
 
-        let timeLeft = 30;
+if (installBtn) {
 
-        const timerElement =
-            document.getElementById("timer");
+    installBtn.addEventListener(
+        "click",
+        async () => {
 
-        if (timerElement) {
+            if (!deferredPrompt) return;
 
-            setInterval(() => {
+            deferredPrompt.prompt();
 
-                timeLeft--;
+            await deferredPrompt.userChoice;
 
-                timerElement.textContent = timeLeft;
+            deferredPrompt = null;
 
-                if (timeLeft <= 0) {
-
-                    window.location.href = "/next_turn";
-
-                }
-
-            }, 1000);
+            installBtn.style.display = "none";
 
         }
+    );
+}
 
-    </script>
+if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => {
+            console.log("SW Registered");
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+}
+
+// ----------------------
+// Game Timer
+// ----------------------
+
+const timerElement =
+    document.getElementById("timer");
+
+if (timerElement) {
+
+    let timeLeft = 30;
+
+    setInterval(() => {
+
+        timeLeft--;
+
+        timerElement.textContent =
+            timeLeft;
+
+        if (timeLeft <= 0) {
+
+            window.location.href =
+                "/next_turn";
+
+        }
+
+    }, 1000);
+
+}
+
+</script>
+
 </body>
 </html>

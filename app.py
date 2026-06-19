@@ -5,12 +5,15 @@ import os
 app = Flask(__name__)
 app.secret_key = "atlas-secret-key"
 
+# --------------------
 # Game State
+# --------------------
+
 used_places = []
 players = []
+player_lives = {}
 current_player_index = 0
 
-# Common aliases players will use
 COUNTRY_ALIASES = {
     "usa": "United States",
     "us": "United States",
@@ -20,17 +23,19 @@ COUNTRY_ALIASES = {
 }
 
 
+# --------------------
+# Country Validation
+# --------------------
+
 def is_valid_country(country_name):
 
     country_name = country_name.lower()
 
     for country in pycountry.countries:
 
-        # Standard country name
         if country.name.lower() == country_name:
             return True
 
-        # Official name if it exists
         if hasattr(country, "official_name"):
             if country.official_name.lower() == country_name:
                 return True
@@ -38,18 +43,74 @@ def is_valid_country(country_name):
     return False
 
 
+# --------------------
+# Life System
+# --------------------
+def lose_life():
+
+    global current_player_index
+
+    if not players:
+        return False
+
+    current_player = players[current_player_index]
+
+    player_lives[current_player] -= 1
+
+    flash(
+        f"💔 {current_player} lost a life! "
+        f"({player_lives[current_player]} remaining)"
+    )
+
+    if player_lives[current_player] <= 0:
+
+        flash(f"💀 {current_player} has been eliminated!")
+
+        player_lives.pop(current_player)
+
+        eliminated_index = current_player_index
+
+        players.pop(eliminated_index)
+
+        # Winner
+        if len(players) == 1:
+
+            flash(f"🏆 {players[0]} wins the game!")
+
+            current_player_index = 0
+
+            return True
+
+        # No players left (safety)
+        if len(players) == 0:
+
+            current_player_index = 0
+
+            return True
+
+        # Fix index
+        if current_player_index >= len(players):
+            current_player_index = 0
+
+    return False
+# --------------------
+# Home
+# --------------------
+
 @app.route("/", methods=["GET", "POST"])
 def home():
 
     global current_player_index
 
     # --------------------
-    # Game Setup
+    # Start Game
     # --------------------
+
     if request.method == "POST" and "start_game" in request.form:
 
         players.clear()
         used_places.clear()
+        player_lives.clear()
 
         for i in range(1, 7):
 
@@ -68,17 +129,25 @@ def home():
 
         current_player_index = 0
 
+        for player in players:
+            player_lives[player] = 3
+
         flash(f"🎮 Game started with {len(players)} players!")
 
         return redirect(url_for("home"))
 
     # --------------------
-    # Atlas Logic
+    # Current Letter
     # --------------------
+
     current_letter = None
 
     if len(used_places) > 0:
         current_letter = used_places[-1][-1].upper()
+
+    # --------------------
+    # Submit Country
+    # --------------------
 
     if request.method == "POST" and "place" in request.form:
 
@@ -86,61 +155,74 @@ def home():
 
         if place == "":
             flash("❌ Please enter a country.")
+            return redirect(url_for("home"))
 
-        else:
+        lower_place = place.lower()
 
-            # Convert aliases
-            lower_place = place.lower()
+        if lower_place in COUNTRY_ALIASES:
+            place = COUNTRY_ALIASES[lower_place]
 
-            if lower_place in COUNTRY_ALIASES:
-                place = COUNTRY_ALIASES[lower_place]
+        # Invalid country
+        if not is_valid_country(place):
 
-            # Validate country
-            if not is_valid_country(place):
+            if lose_life():
+                return redirect(url_for("home"))
 
-                flash(f"❌ {place} is not a valid country.")
+            return redirect(url_for("home"))
 
-            else:
+        normalized_place = place.lower()
 
-                # Duplicate detection
-                normalized_place = place.lower()
+        normalized_used_places = [
+            p.lower() for p in used_places
+        ]
 
-                normalized_used_places = [
-                    p.lower() for p in used_places
-                ]
+        # Duplicate country
+        if normalized_place in normalized_used_places:
 
-                if normalized_place in normalized_used_places:
+            flash(f"❌ {place} has already been used!")
 
-                    flash(f"❌ {place} has already been used!")
+            if lose_life():
+                return redirect(url_for("home"))
 
-                elif current_letter and place[0].upper() != current_letter:
+            return redirect(url_for("home"))
 
-                    flash(
-                        f"❌ Country must start with '{current_letter}'"
-                    )
+        # Wrong starting letter
+        if current_letter and place[0].upper() != current_letter:
 
-                else:
+            flash(
+                f"❌ Country must start with '{current_letter}'"
+            )
 
-                    used_places.append(place)
+            if lose_life():
+                return redirect(url_for("home"))
 
-                    flash(f"✅ {place} accepted!")
+            return redirect(url_for("home"))
 
-                    # Next player's turn
-                    if len(players) > 0:
+        # Valid move
+        used_places.append(place)
 
-                        current_player_index += 1
+        flash(f"✅ {place} accepted!")
 
-                        if current_player_index >= len(players):
-                            current_player_index = 0
+        current_player_index += 1
+
+        if current_player_index >= len(players):
+            current_player_index = 0
 
         return redirect(url_for("home"))
 
     # --------------------
     # Display Data
     # --------------------
+
     current_player = None
 
     if len(players) > 0:
+
+        current_player_index = min(
+            current_player_index,
+            len(players) - 1
+        )
+
         current_player = players[current_player_index]
 
     last_place = None
@@ -154,9 +236,14 @@ def home():
         current_player=current_player,
         current_letter=current_letter,
         last_place=last_place,
+        player_lives=player_lives,
         total_places=len(used_places)
     )
 
+
+# --------------------
+# Timer Expired
+# --------------------
 @app.route("/next_turn")
 def next_turn():
 
@@ -164,14 +251,26 @@ def next_turn():
 
     if len(players) > 0:
 
-        current_player_index += 1
+        flash("⏰ Time's up!")
 
-        if current_player_index >= len(players):
-            current_player_index = 0
+        eliminated = lose_life()
 
-        flash("⏰ Time's up! Next player's turn.")
+        # Someone won
+        if eliminated:
+            return redirect(url_for("home"))
+
+        # Only move to next player if current player survived
+        if len(players) > 1:
+
+            current_player_index += 1
+
+            if current_player_index >= len(players):
+                current_player_index = 0
 
     return redirect(url_for("home"))
+# --------------------
+# Reset Game
+# --------------------
 
 @app.route("/reset")
 def reset():
@@ -185,6 +284,7 @@ def reset():
 
     used_places.clear()
     players.clear()
+    player_lives.clear()
 
     current_player_index = 0
 
@@ -193,19 +293,41 @@ def reset():
     return redirect(url_for("home"))
 
 
-# PWA Routing Handlers
-@app.route('/manifest.json')
+# --------------------
+# PWA Files
+# --------------------
+
+@app.route("/manifest.json")
 def serve_manifest():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'manifest.json')
+
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "manifest.json"
+    )
 
 
-@app.route('/sw.js')
+@app.route("/sw.js")
 def serve_sw():
-    response = send_from_directory(os.path.join(app.root_path, 'static'), 'sw.js')
-    response.headers['Service-Worker-Allowed'] = '/'
+
+    response = send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "sw.js"
+    )
+
+    response.headers["Service-Worker-Allowed"] = "/"
+
     return response
 
 
+# --------------------
+# Run App
+# --------------------
+
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+
+    app.run(
+        host="0.0.0.0",
+        port=port
+    )

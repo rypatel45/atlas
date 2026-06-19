@@ -12,52 +12,62 @@ body {
 }
 
 .container {
-    max-width: 500px;
+    max-width: 550px;
     margin: auto;
     padding: 20px;
 }
 
 h1 {
     text-align: center;
-    margin-top: 20px;
     font-size: 3rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 .subtitle {
     text-align: center;
-    margin-bottom: 30px;
     color: #94a3b8;
+    margin-bottom: 30px;
 }
+
+/* ---------------- */
+/* Lives Card */
+/* ---------------- */
+
+.lives-card {
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.lives-card h3 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.player-life {
+    padding: 8px 0;
+    font-size: 1.1rem;
+}
+
+/* ---------------- */
+/* Turn Banner */
+/* ---------------- */
 
 .turn-banner {
     background: #2563eb;
-    color: white;
-
     text-align: center;
-
     font-size: 2rem;
     font-weight: bold;
-
     padding: 20px;
-
     border-radius: 16px;
-
     margin-bottom: 20px;
 }
 
-/* .timer-box {
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: bold;
-
-    margin-bottom: 20px;
-
-    padding: 15px;
-
-    background: rgba(255,255,255,0.08);
-
-    border-radius: 20px;
-} */
+/* ---------------- */
+/* Timer */
+/* ---------------- */
 
 .timer-box {
     text-align: center;
@@ -66,67 +76,64 @@ h1 {
     margin-bottom: 20px;
 }
 
+/* ---------------- */
+/* Letter Box */
+/* ---------------- */
+
 .letter-box {
-
     background: #1e293b;
-
     text-align: center;
-
-    font-size: 5rem;
+    font-size: 6rem;
     font-weight: bold;
-
     padding: 30px;
-
-    border-radius: 16px;
-
+    border-radius: 20px;
     margin-bottom: 20px;
 }
 
+/* ---------------- */
+/* Card */
+/* ---------------- */
+
 .card {
-
     background: #1e293b;
-
-    padding: 20px;
-
     border-radius: 16px;
-
-    margin-bottom: 20px;
-
+    padding: 20px;
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .last-place {
-    font-size: 1.3rem;
-    margin: 10px 0;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    color: #38bdf8;
 }
+
+/* ---------------- */
+/* Messages */
+/* ---------------- */
 
 .message {
-
-    text-align: center;
-
-    font-weight: bold;
-
-    margin-bottom: 15px;
-
+    background: rgba(251, 191, 36, 0.15);
     color: #fbbf24;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: bold;
 }
 
+/* ---------------- */
+/* Inputs */
+/* ---------------- */
+
 input {
-
     width: 100%;
-
     padding: 15px;
-
     margin-bottom: 12px;
-
     border: none;
-
     border-radius: 12px;
-
     background: #334155;
-
     color: white;
-
     font-size: 1rem;
 }
 
@@ -134,187 +141,142 @@ input::placeholder {
     color: #cbd5e1;
 }
 
+/* ---------------- */
+/* Buttons */
+/* ---------------- */
+
 button {
-
     width: 100%;
-
     padding: 15px;
-
     border: none;
-
     border-radius: 12px;
-
     background: #2563eb;
-
     color: white;
-
     font-size: 1rem;
-
     font-weight: bold;
-
     cursor: pointer;
+    transition: 0.2s;
 }
 
 button:hover {
+    transform: translateY(-2px);
     background: #1d4ed8;
 }
 
+/* ---------------- */
+/* End Game */
+/* ---------------- */
+
 .reset-btn {
-
     display: block;
-
     text-align: center;
-
-    margin-top: 60px;
-
     text-decoration: none;
-
-    color: white;
-
-    background: #dc2626;
-
+    margin-top: 25px;
     padding: 15px;
-
     border-radius: 12px;
+    background: #dc2626;
+    color: white;
+    font-weight: bold;
+    transition: 0.2s;
 }
 
 .reset-btn:hover {
     background: #b91c1c;
 }
 
+/* ---------------- */
+/* Install Button */
+/* ---------------- */
+
+.pwa-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #059669;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.pwa-btn:hover {
+    background: #047857;
+}
+
+/* ---------------- */
+/* Confirm Reset */
+/* ---------------- */
+
+.confirm-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.confirm-card {
+    width: 100%;
+    max-width: 450px;
+    background: #1e293b;
+    padding: 35px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.confirm-card h1 {
+    margin-bottom: 20px;
+}
+
+.confirm-card p {
+    color: #cbd5e1;
+    margin-bottom: 25px;
+}
+
+.danger-btn {
+    display: block;
+    text-decoration: none;
+    background: #dc2626;
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.cancel-btn {
+    display: block;
+    text-decoration: none;
+    background: #334155;
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+/* ---------------- */
+/* Mobile */
+/* ---------------- */
+
 @media (max-width: 600px) {
 
+    h1 {
+        font-size: 2.4rem;
+    }
+
     .turn-banner {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+    }
+
+    .timer-box {
+        font-size: 2.5rem;
     }
 
     .letter-box {
         font-size: 4rem;
     }
 
-    h1 {
-        font-size: 2.5rem;
+    .last-place {
+        font-size: 1.2rem;
     }
-}
-
-/* confirm reset */
-
-/* Confirm Reset Page */
-
-.confirm-container {
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    min-height: 100vh;
-
-    padding: 20px;
-}
-
-.confirm-card {
-
-    width: 100%;
-    max-width: 450px;
-
-    background: #1e293b;
-
-    padding: 35px;
-
-    border-radius: 20px;
-
-    text-align: center;
-}
-
-.confirm-card h1 {
-
-    margin-bottom: 20px;
-}
-
-.confirm-card p {
-
-    color: #cbd5e1;
-
-    margin-bottom: 30px;
-
-    line-height: 1.5;
-}
-
-.danger-btn {
-
-    display: block;
-
-    text-decoration: none;
-
-    background: #dc2626;
-
-    color: white;
-
-    padding: 15px;
-
-    border-radius: 12px;
-
-    font-weight: bold;
-
-    margin-bottom: 15px;
-}
-
-.danger-btn:hover {
-
-    background: #b91c1c;
-}
-
-.cancel-btn {
-
-    display: block;
-
-    text-decoration: none;
-
-    background: #334155;
-
-    color: white;
-
-    padding: 15px;
-
-    border-radius: 12px;
-
-    font-weight: bold;
-}
-
-.cancel-btn:hover {
-
-    background: #475569;
-}
-
-/* Added PWA Design Interfaces */
-.pwa-btn {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    background: #059669 !important;
-    color: white;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-.pwa-btn:hover {
-    background: #047857 !important;
-}
-
-#iosPrompt {
-    background: #1e293b;
-    color: #f8fafc;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    text-align: center;
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border: 2px dashed #2563eb;
 }
